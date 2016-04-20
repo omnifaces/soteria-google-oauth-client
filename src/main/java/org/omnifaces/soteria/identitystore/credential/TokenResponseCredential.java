@@ -24,7 +24,7 @@ public class TokenResponseCredential implements Credential {
     /**
      * Constructor
      *
-     * @param token  The token value to compare for authentication.
+     * @param tokenResponse  The token value to compare for authentication.
      */
     public TokenResponseCredential(TokenResponse tokenResponse) {
         this.tokenResponse = tokenResponse;
