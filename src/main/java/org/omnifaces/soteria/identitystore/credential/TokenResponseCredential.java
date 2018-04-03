@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 OmniFaces.
+ * Copyright 2016-2018 OmniFaces.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -13,7 +13,7 @@
 
 package org.omnifaces.soteria.identitystore.credential;
 
-import javax.security.identitystore.credential.Credential;
+import javax.security.enterprise.credential.Credential;
 
 import com.google.api.client.auth.oauth2.TokenResponse;
 
@@ -38,5 +38,5 @@ public class TokenResponseCredential implements Credential {
     public TokenResponse getTokenResponse() {
         return tokenResponse;
     }
- 
+
 }

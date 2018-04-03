@@ -14,10 +14,10 @@
 package org.omnifaces.soteria.mechanism;
 
 import static java.util.logging.Level.WARNING;
-import static javax.security.auth.message.AuthStatus.SEND_CONTINUE;
-import static javax.security.auth.message.AuthStatus.SEND_FAILURE;
-import static javax.security.auth.message.AuthStatus.SUCCESS;
-import static javax.security.identitystore.CredentialValidationResult.Status.VALID;
+import static javax.security.enterprise.AuthenticationStatus.SEND_CONTINUE;
+import static javax.security.enterprise.AuthenticationStatus.SEND_FAILURE;
+import static javax.security.enterprise.AuthenticationStatus.SUCCESS;
+import static javax.security.enterprise.identitystore.CredentialValidationResult.Status.VALID;
 import static org.omnifaces.soteria.mechanism.util.Utils.encodeURL;
 import static org.omnifaces.soteria.mechanism.util.Utils.getBaseURL;
 import static org.omnifaces.soteria.mechanism.util.Utils.isEmpty;
@@ -28,12 +28,12 @@ import java.util.logging.Logger;
 
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
-import javax.security.auth.message.AuthException;
-import javax.security.auth.message.AuthStatus;
-import javax.security.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.authentication.mechanism.http.HttpMessageContext;
-import javax.security.identitystore.CredentialValidationResult;
-import javax.security.identitystore.IdentityStore;
+import javax.security.enterprise.AuthenticationException;
+import javax.security.enterprise.AuthenticationStatus;
+import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
+import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.identitystore.CredentialValidationResult;
+import javax.security.enterprise.identitystore.IdentityStore;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,21 +65,21 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 	private String registrationErrorUrl;
 
 	private StateCookieDAO stateCookieDAO = new StateCookieDAO();
-	
+
 	@Inject
 	private IdentityStore identityStore;
-	
+
 	public void init(Map<String, String> options, AuthorizationCodeFlow authorizationCodeFlow) {
 		useSessions = Boolean.valueOf(options.get(USE_SESSIONS));
 		callbackURL = options.get(CALLBACK_URL);
 		registrationErrorUrl = options.get(REGISTRATION_ERROR_URL);
-		
+
 		this.authorizationCodeFlow = authorizationCodeFlow;
 	}
-	
+
 
 	@Override
-	public AuthStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthException {
+	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext) throws AuthenticationException {
 		if (isLoginRequest(request, response, httpMessageContext)) {
 			return SEND_CONTINUE;
 		}
@@ -93,13 +93,13 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 
 		}
 		catch (Exception e) {
-			throw (AuthException) new AuthException().initCause(e);
+			throw new AuthenticationException(e);
 		}
 
 		return SUCCESS;
 	}
 
-	private boolean isLoginRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMsgContext) throws AuthException {
+	private boolean isLoginRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMsgContext) throws AuthenticationException {
 
 		if (httpMsgContext.isAuthenticationRequest()) {
 			try {
@@ -116,7 +116,7 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 				return true;
 			}
 			catch (Exception e) {
-				throw (AuthException)new AuthException().initCause(e);
+				throw new AuthenticationException(e);
 			}
 		}
 
@@ -149,19 +149,19 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 		return false;
 	}
 
-	private AuthStatus doOAuthLogin(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMsgContext) throws Exception {
+	private AuthenticationStatus doOAuthLogin(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMsgContext) throws Exception {
 
 		String parameter = request.getParameter("code");
 
 		TokenResponse tokenResponse = authorizationCodeFlow.newTokenRequest(parameter).setRedirectUri(getBaseURL(request) + callbackURL).execute();
 
 		try {
-			
+
 			CredentialValidationResult result =	identityStore.validate(new TokenResponseCredential(tokenResponse));
-			
+
 			if (result.getStatus() == VALID) {
 				httpMsgContext.notifyContainerAboutLogin(
-					result.getCallerPrincipal(), 
+					result.getCallerPrincipal(),
 					result.getCallerGroups());
 
 				if (!useSessions) {
@@ -170,7 +170,7 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 
 				return SUCCESS;
 			}
-		}	
+		}
 		catch (IllegalStateException e) {
 			if (e.getMessage() != null) {
 				request.getSession().setAttribute(SOCIAL_PROFILE, null);
@@ -180,7 +180,7 @@ public class OAuthClientServerBaseModule implements HttpAuthenticationMechanism 
 
 		return SEND_FAILURE;
 	}
-	
+
 	// Workaround for possible CDI bug; at least in Weld 2.3.2 default methods
 	// don't seem to be intercepted
 	// See https://issues.jboss.org/browse/WELD-2093

@@ -4,16 +4,16 @@
 >
 	<modelVersion>4.0.0</modelVersion>
 	<prerequisites>
-		<maven>3.0.0</maven>
+		<maven>3.0.4</maven>
 	</prerequisites>
 
 	<groupId>org.omnifaces</groupId>
 	<artifactId>soteria-google-oauth-client</artifactId>
-	<version>0.6-SNAPSHOT</version>
+	<version>0.7-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	
 	<name>Soteria-Google OAuth Client</name>
-	<description>Authentication mechanism for the Soteria (JSR 375) library to allow use of the Google OAuth Java Client library</description>
+	<description>Authentication mechanism for Java EE Security (JSR 375) to allow use of the Google OAuth Java Client library</description>
 
 	<url>http://omnisecurity.omnifaces.org</url>
 	<organization>
@@ -47,7 +47,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<javase.version>1.8</javase.version>
-		<javaee.version>7.0</javaee.version>
+		<javaee.version>8.0</javaee.version>
 	</properties>
 
 	<developers>
@@ -69,7 +69,7 @@
 			<dependency>
 				<groupId>com.google.oauth-client</groupId>
 				<artifactId>google-oauth-client-parent</artifactId>
-				<version>1.20.0</version>
+				<version>1.23.0</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -85,12 +85,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>javax.security</groupId>
-			<artifactId>javax.security-api</artifactId>
-			<version>1.0-m01-SNAPSHOT</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>com.google.oauth-client</groupId>
 			<artifactId>google-oauth-client</artifactId>
 		</dependency>
@@ -102,7 +96,7 @@
 			<!-- Set the Java compiler versions -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.5.1</version>
+				<version>3.7.0</version>
 				<configuration>
 					<source>${javase.version}</source>
 					<target>${javase.version}</target>
@@ -114,7 +108,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.6</version>
+				<version>3.0.2</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -133,7 +127,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.0.0</version>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -148,7 +142,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
+				<version>3.0.0</version>
 				<configuration>
 					<javadocVersion>1.8</javadocVersion>
 				</configuration>
@@ -170,7 +164,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
+				<version>1.6.8</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>
